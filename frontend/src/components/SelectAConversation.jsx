@@ -3,33 +3,54 @@ import { useEffect } from "react";
 import { GiConversation } from "react-icons/gi";
 import { useSocket } from "../context/SocketContext";
 import { conversationsAtom } from "../atoms/messagesAtom";
-import { useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import messageSound from "../assets/sounds/message.mp3";
+import userAtom from "../atoms/userAtom";
 
 const SelectAConversation = () => {
     const { socket } = useSocket();
-    const setConversations = useSetRecoilState(conversationsAtom);
+    const currentUser = useRecoilValue(userAtom);
+    const [conversations, setConversations] = useRecoilState(conversationsAtom);
 
     useEffect(() => {
         socket?.on("newMessage", (message) => {
             const sound = new Audio(messageSound);
             sound.play();
 
-            setConversations((prev) => {
-                const updatedConversations = prev.map((conversation) => {
-                    if (conversation._id === message.conversationId) {
-                        return {
-                            ...conversation,
-                            lastMessage: {
-                                text: message.text,
-                                sender: message.sender,
-                            },
-                        };
-                    }
-                    return conversation;
+            const conversationFound = conversations.find(
+                (conversation) => conversation._id === message.conversationId
+            );
+            if (conversationFound) {
+                setConversations((prev) => {
+                    const updatedConversations = prev.map((conversation) => {
+                        if (conversation._id === message.conversationId) {
+                            return {
+                                ...conversation,
+                                lastMessage: {
+                                    text: message.text,
+                                    sender: message.sender,
+                                },
+                            };
+                        }
+                        return conversation;
+                    });
+                    return updatedConversations;
                 });
-                return updatedConversations;
-            });
+            } else {
+                setConversations((prev) => [
+                    ...prev,
+                    {
+                        _id: message.conversationId,
+                        participants: [currentUser._id, message.sender],
+                        lastMessage: {
+                            text: message.text,
+                            sender: message.sender,
+                        },
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString(),
+                    },
+                ]);
+            }
         });
 
         return () => socket?.off("newMessage");

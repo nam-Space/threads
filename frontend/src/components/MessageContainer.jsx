@@ -11,7 +11,7 @@ import {
 import Message from "./Message";
 import MessageInput from "./MessageInput";
 import useShowToast from "../hooks/useShowToast";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import {
     conversationsAtom,
     selectedConversationAtom,
@@ -30,7 +30,7 @@ const MessageContainer = () => {
     const [messages, setMessages] = useState([]);
     const currentUser = useRecoilValue(userAtom);
     const { socket } = useSocket();
-    const setConversations = useSetRecoilState(conversationsAtom);
+    const [conversations, setConversations] = useRecoilState(conversationsAtom);
     const messageEndRef = useRef(null);
     const lastUserSeen = [...messages]
         ?.reverse()
@@ -45,21 +45,40 @@ const MessageContainer = () => {
             const sound = new Audio(messageSound);
             sound.play();
 
-            setConversations((prev) => {
-                const updatedConversations = prev.map((conversation) => {
-                    if (conversation._id === message.conversationId) {
-                        return {
-                            ...conversation,
-                            lastMessage: {
-                                text: message.text,
-                                sender: message.sender,
-                            },
-                        };
-                    }
-                    return conversation;
+            const conversationFound = conversations.find(
+                (conversation) => conversation._id === message.conversationId
+            );
+            if (conversationFound) {
+                setConversations((prev) => {
+                    const updatedConversations = prev.map((conversation) => {
+                        if (conversation._id === message.conversationId) {
+                            return {
+                                ...conversation,
+                                lastMessage: {
+                                    text: message.text,
+                                    sender: message.sender,
+                                },
+                            };
+                        }
+                        return conversation;
+                    });
+                    return updatedConversations;
                 });
-                return updatedConversations;
-            });
+            } else {
+                setConversations((prev) => [
+                    ...prev,
+                    {
+                        _id: message.conversationId,
+                        participants: [currentUser._id, message.sender],
+                        lastMessage: {
+                            text: message.text,
+                            sender: message.sender,
+                        },
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString(),
+                    },
+                ]);
+            }
         });
 
         return () => socket.off("newMessage");
