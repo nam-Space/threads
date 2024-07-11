@@ -1,10 +1,14 @@
 
-import { useSetRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import userAtom from '../atoms/userAtom';
 import useShowToast from './useShowToast';
+import { selectedConversationAtom } from '../atoms/messagesAtom';
 
 const useLogout = () => {
     const setUser = useSetRecoilState(userAtom)
+    const [selectedConversation, setSelectedConversation] = useRecoilState(
+        selectedConversationAtom
+    );
     const showToast = useShowToast();
 
     const logout = async () => {
@@ -19,6 +23,14 @@ const useLogout = () => {
             if (data.error) {
                 showToast("Error", data.error, "error");
                 return;
+            }
+            if (selectedConversation._id) {
+                setSelectedConversation({
+                    _id: '',
+                    userId: '',
+                    username: '',
+                    userProfilePic: ''
+                })
             }
             localStorage.removeItem("user-threads");
             setUser(null);
