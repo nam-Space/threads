@@ -14,8 +14,8 @@ const SelectAConversation = () => {
 
     useEffect(() => {
         socket?.on("newMessage", async (message) => {
-            const sound = new Audio(messageSound);
-            sound.play();
+            // const sound = new Audio(messageSound);
+            // sound.play();
 
             const conversationFound = conversations.find(
                 (conversation) => conversation._id === message.conversationId
