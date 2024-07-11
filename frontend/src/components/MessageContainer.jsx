@@ -37,7 +37,7 @@ const MessageContainer = () => {
         ?.find((m) => m.sender === currentUser._id && m.seen);
 
     useEffect(() => {
-        socket.on("newMessage", (message) => {
+        socket.on("newMessage", async (message) => {
             if (selectedConversation._id === message.conversationId) {
                 setMessages((prevMessages) => [...prevMessages, message]);
             }
@@ -65,11 +65,13 @@ const MessageContainer = () => {
                     return updatedConversations;
                 });
             } else {
+                const res = await fetch(`/api/users/find/${message.sender}`);
+                const data = await res.json();
                 setConversations((prev) => [
                     ...prev,
                     {
                         _id: message.conversationId,
-                        participants: [currentUser._id, message.sender],
+                        participants: [currentUser, data],
                         lastMessage: {
                             text: message.text,
                             sender: message.sender,

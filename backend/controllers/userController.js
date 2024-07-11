@@ -27,6 +27,20 @@ const getAllUsers = async (req, res) => {
     }
 }
 
+const getUserById = async (req, res) => {
+    try {
+        const { userId } = req.params
+        const user = await User.findOne({ _id: userId }).select('-password').select('-updatedAt')
+        if (!user) {
+            return res.status(400).json({ error: 'User not found' });
+        }
+        res.status(200).json(user)
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+        console.log(error.message)
+    }
+}
+
 const getUserProfile = async (req, res) => {
     try {
         const { username } = req.params
@@ -264,6 +278,7 @@ module.exports = {
     logoutUser,
     followUnFollowUser,
     updateUser,
+    getUserById,
     getUserProfile,
     getAllUsers,
     getSuggestedUsers,

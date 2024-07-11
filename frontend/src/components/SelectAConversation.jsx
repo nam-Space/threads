@@ -13,7 +13,7 @@ const SelectAConversation = () => {
     const [conversations, setConversations] = useRecoilState(conversationsAtom);
 
     useEffect(() => {
-        socket?.on("newMessage", (message) => {
+        socket?.on("newMessage", async (message) => {
             const sound = new Audio(messageSound);
             sound.play();
 
@@ -37,11 +37,13 @@ const SelectAConversation = () => {
                     return updatedConversations;
                 });
             } else {
+                const res = await fetch(`/api/users/find/${message.sender}`);
+                const data = await res.json();
                 setConversations((prev) => [
                     ...prev,
                     {
                         _id: message.conversationId,
-                        participants: [currentUser._id, message.sender],
+                        participants: [currentUser, data],
                         lastMessage: {
                             text: message.text,
                             sender: message.sender,
