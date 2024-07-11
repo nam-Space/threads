@@ -7,12 +7,12 @@ const postRoutes = require('./routes/postRoutes')
 const messageRoutes = require('./routes/messageRoutes')
 const { v2: cloudinary } = require('cloudinary');
 const { app, server } = require('./socket/socket');
-const cron = require('./cron/cron');
+const job = require('./cron/cron');
 
 require('dotenv').config()
 
 connectDB()
-cron.start()
+job.start()
 
 const PORT = process.env.PORT || 5000
 const __dirname2 = path.resolve()

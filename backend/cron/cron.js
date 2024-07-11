@@ -1,9 +1,10 @@
 const cron = require('cron');
 const https = require('https');
+require('dotenv').config()
 
-const URL = "https://threads-vfpe.onrender.com";
+const URL = process.env.VITE_FRONTEND_URL;
 
-const cron = new cron.CronJob("*/14 * * * *", function () {
+const job = new cron.CronJob("*/14 * * * *", function () {
     https
         .get(URL, (res) => {
             if (res.statusCode === 200) {
@@ -17,7 +18,7 @@ const cron = new cron.CronJob("*/14 * * * *", function () {
         });
 });
 
-module.exports = cron;
+module.exports = job;
 
 // CRON JOB EXPLANATION:
 // Cron jobs are scheduled tasks that run periodically at fixed intervals or specific times

@@ -15,6 +15,7 @@ import SettingsPage from "./pages/SettingsPage";
 function App() {
     const user = useRecoilValue(userAtom);
     const { pathname } = useLocation();
+
     return (
         <Box position={"relative"} w={"full"}>
             <Header />

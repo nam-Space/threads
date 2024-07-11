@@ -15,7 +15,7 @@ const SocketContextProvider = ({ children }) => {
     const [onlineUsers, setOnlineUsers] = useState([]);
 
     useEffect(() => {
-        const socket = io("/", {
+        const socket = io(import.meta.env.VITE_FRONTEND_URL, {
             query: {
                 userId: user?._id,
             },
