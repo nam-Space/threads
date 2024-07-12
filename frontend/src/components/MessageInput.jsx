@@ -16,7 +16,7 @@ import {
 import { useRef, useState } from "react";
 import { IoSendSharp } from "react-icons/io5";
 import useShowToast from "../hooks/useShowToast";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import {
     conversationsAtom,
     selectedConversationAtom,
@@ -27,7 +27,9 @@ import usePreviewImg from "../hooks/usePreviewImg";
 const MessageInput = ({ setMessages }) => {
     const [messageText, setMessageText] = useState("");
     const showToast = useShowToast();
-    const selectedConversation = useRecoilValue(selectedConversationAtom);
+    const [selectedConversation, setSelectedConversation] = useRecoilState(
+        selectedConversationAtom
+    );
     const setConversations = useSetRecoilState(conversationsAtom);
     const imageRef = useRef(null);
     const { onClose } = useDisclosure();
@@ -62,9 +64,11 @@ const MessageInput = ({ setMessages }) => {
                     if (conversation._id === selectedConversation._id) {
                         return {
                             ...conversation,
+                            _id: data.conversationId,
                             lastMessage: {
                                 text: messageText,
                                 sender: data.sender,
+                                img: data.img,
                             },
                             mock: false,
                         };
@@ -73,6 +77,11 @@ const MessageInput = ({ setMessages }) => {
                 });
                 return updatedConversations;
             });
+            setSelectedConversation((prev) => ({
+                ...prev,
+                _id: data.conversationId,
+            }));
+
             setMessageText("");
             setImgUrl("");
         } catch (error) {

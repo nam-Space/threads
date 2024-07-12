@@ -3,23 +3,22 @@ import { useEffect } from "react";
 import { GiConversation } from "react-icons/gi";
 import { useSocket } from "../context/SocketContext";
 import { conversationsAtom } from "../atoms/messagesAtom";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 import messageSound from "../assets/sounds/message.mp3";
-import userAtom from "../atoms/userAtom";
 
 const SelectAConversation = () => {
     const { socket } = useSocket();
-    const currentUser = useRecoilValue(userAtom);
     const [conversations, setConversations] = useRecoilState(conversationsAtom);
 
     useEffect(() => {
         socket?.on("newMessage", async (message) => {
-            // const sound = new Audio(messageSound);
-            // sound.play();
+            const sound = new Audio(messageSound);
+            sound.play();
 
             const conversationFound = conversations.find(
                 (conversation) => conversation._id === message.conversationId
             );
+
             if (conversationFound) {
                 setConversations((prev) => {
                     const updatedConversations = prev.map((conversation) => {
@@ -29,6 +28,7 @@ const SelectAConversation = () => {
                                 lastMessage: {
                                     text: message.text,
                                     sender: message.sender,
+                                    img: message.img,
                                 },
                             };
                         }
@@ -43,10 +43,17 @@ const SelectAConversation = () => {
                     ...prev,
                     {
                         _id: message.conversationId,
-                        participants: [currentUser, data],
+                        participants: [
+                            {
+                                _id: data._id,
+                                username: data.username,
+                                profilePic: data.profilePic,
+                            },
+                        ],
                         lastMessage: {
                             text: message.text,
                             sender: message.sender,
+                            img: message.img,
                         },
                         createdAt: new Date().toISOString(),
                         updatedAt: new Date().toISOString(),
@@ -56,7 +63,7 @@ const SelectAConversation = () => {
         });
 
         return () => socket?.off("newMessage");
-    }, [socket, setConversations]);
+    }, [socket, setConversations, conversations]);
 
     return (
         <Flex

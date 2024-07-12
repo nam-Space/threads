@@ -18,7 +18,8 @@ const sendMessage = async (req, res) => {
                 participants: [senderId, recipientId],
                 lastMessage: {
                     text: message,
-                    sender: senderId
+                    sender: senderId,
+                    img: img || ''
                 }
             })
             await conversation.save()
@@ -41,7 +42,8 @@ const sendMessage = async (req, res) => {
             conversation.updateOne({
                 lastMessage: {
                     text: message,
-                    sender: senderId
+                    sender: senderId,
+                    img: img || ''
                 }
             })
         ])

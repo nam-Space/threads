@@ -48,6 +48,7 @@ const MessageContainer = () => {
             const conversationFound = conversations.find(
                 (conversation) => conversation._id === message.conversationId
             );
+
             if (conversationFound) {
                 setConversations((prev) => {
                     const updatedConversations = prev.map((conversation) => {
@@ -57,6 +58,7 @@ const MessageContainer = () => {
                                 lastMessage: {
                                     text: message.text,
                                     sender: message.sender,
+                                    img: message.img,
                                 },
                             };
                         }
@@ -71,10 +73,17 @@ const MessageContainer = () => {
                     ...prev,
                     {
                         _id: message.conversationId,
-                        participants: [currentUser, data],
+                        participants: [
+                            {
+                                _id: data._id,
+                                username: data.username,
+                                profilePic: data.profilePic,
+                            },
+                        ],
                         lastMessage: {
                             text: message.text,
                             sender: message.sender,
+                            img: message.img,
                         },
                         createdAt: new Date().toISOString(),
                         updatedAt: new Date().toISOString(),

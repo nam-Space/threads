@@ -11,6 +11,10 @@ const conversationSchema = new mongoose.Schema({
         text: {
             type: String
         },
+        img: {
+            type: String,
+            default: ''
+        },
         sender: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User'
