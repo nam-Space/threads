@@ -24,6 +24,7 @@ const HomePage = () => {
                     return;
                 }
                 setPosts(data);
+                console.log("res", data);
             } catch (error) {
                 showToast("Error", error.message, "error");
                 if (error.message === "Unauthorized") {
