@@ -29,7 +29,6 @@ function App() {
                         : "620px"
                 }
             >
-                {/* <Header /> */}
                 <Routes>
                     <Route
                         path="/"
