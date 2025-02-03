@@ -58,6 +58,12 @@ const Actions = ({ post }) => {
                 headers: { "Content-Type": "application/json" },
             });
             const data = await res.json();
+            if (data.message === "Unauthorized") {
+                localStorage.removeItem("user-threads");
+                setUser(null);
+                showToast("Error", data.message, "error");
+                return;
+            }
             if (data.error) {
                 return showToast("Error", data.error, "error");
             }
@@ -116,6 +122,12 @@ const Actions = ({ post }) => {
             });
 
             const data = await res.json();
+            if (data.message === "Unauthorized") {
+                localStorage.removeItem("user-threads");
+                setUser(null);
+                showToast("Error", data.message, "error");
+                return;
+            }
             if (data.error) {
                 return showToast("Error", data.error, "error");
             }

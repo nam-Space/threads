@@ -32,6 +32,12 @@ const Post = ({ post, postedBy }) => {
             });
 
             const data = await res.json();
+            if (data.message === "Unauthorized") {
+                localStorage.removeItem("user-threads");
+                setUser(null);
+                showToast("Error", data.message, "error");
+                return;
+            }
             if (data.error) {
                 showToast("Error", data.error, "error");
                 return;

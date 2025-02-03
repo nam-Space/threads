@@ -19,12 +19,17 @@ const HomePage = () => {
             try {
                 const res = await fetch("/api/posts/feed");
                 const data = await res.json();
+                if (data.message === "Unauthorized") {
+                    localStorage.removeItem("user-threads");
+                    setUser(null);
+                    showToast("Error", data.message, "error");
+                    return;
+                }
                 if (data.error) {
                     showToast("Error", data.error, "error");
                     return;
                 }
                 setPosts(data);
-                console.log("res", data);
             } catch (error) {
                 showToast("Error", error.message, "error");
                 if (error.message === "Unauthorized") {

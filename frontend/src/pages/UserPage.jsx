@@ -25,6 +25,12 @@ const UserPage = () => {
             try {
                 const res = await fetch(`/api/posts/user/${username}`);
                 const data = await res.json();
+                if (data.message === "Unauthorized") {
+                    localStorage.removeItem("user-threads");
+                    setUser(null);
+                    showToast("Error", data.message, "error");
+                    return;
+                }
                 setPosts(data);
             } catch (error) {
                 showToast("Error", error, "error");
