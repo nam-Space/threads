@@ -1,6 +1,6 @@
 import { Avatar, Box, Divider, Flex, Image, Text } from "@chakra-ui/react";
 import { formatDistanceToNow } from "date-fns";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import userAtom from "../atoms/userAtom";
 import { DeleteIcon } from "@chakra-ui/icons";
 import useShowToast from "../hooks/useShowToast";
@@ -9,6 +9,7 @@ import postsAtom from "../atoms/postsAtom";
 import { useState } from "react";
 
 const Comment = ({ post, reply, lastReply }) => {
+    const setUser = useSetRecoilState(userAtom);
     const currentUser = useRecoilValue(userAtom);
     const showToast = useShowToast();
     const navigate = useNavigate();
@@ -49,6 +50,10 @@ const Comment = ({ post, reply, lastReply }) => {
             showToast("Success", "Reply deleted", "success");
         } catch (error) {
             showToast("Error", error.message, "error");
+            if (error.message === "Unauthorized") {
+                localStorage.removeItem("user-threads");
+                setUser(null);
+            }
         } finally {
             setIsDeleteReply(false);
         }

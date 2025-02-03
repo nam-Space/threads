@@ -21,7 +21,7 @@ import {
 import { useRef, useState } from "react";
 import usePreviewImg from "../hooks/usePreviewImg";
 import { BsFillImageFill } from "react-icons/bs";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import userAtom from "../atoms/userAtom";
 import useShowToast from "../hooks/useShowToast";
 import postsAtom from "../atoms/postsAtom";
@@ -35,7 +35,7 @@ const CreatePost = () => {
     const { handleImageChange, imgUrl, setImgUrl } = usePreviewImg();
     const imageRef = useRef(null);
     const [remainingChar, setRemainingChar] = useState(MAX_CHAR);
-    const user = useRecoilValue(userAtom);
+    const [user, setUser] = useRecoilState(userAtom);
     const showToast = useShowToast();
     const [loading, setLoading] = useState(false);
     const setPosts = useSetRecoilState(postsAtom);
@@ -89,6 +89,10 @@ const CreatePost = () => {
             setImgUrl("");
         } catch (error) {
             showToast("Error", error, "error");
+            if (error.message === "Unauthorized") {
+                localStorage.removeItem("user-threads");
+                setUser(null);
+            }
         } finally {
             setLoading(false);
         }

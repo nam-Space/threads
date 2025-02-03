@@ -16,13 +16,14 @@ import useShowToast from "../hooks/useShowToast";
 import { useNavigate, useParams } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 import { DeleteIcon } from "@chakra-ui/icons";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import userAtom from "../atoms/userAtom";
 import postsAtom from "../atoms/postsAtom";
 
 const PostPage = () => {
     const { loading, user } = useGetUserProfile();
     const currentUser = useRecoilValue(userAtom);
+    const setUser = useSetRecoilState(userAtom);
     const [posts, setPosts] = useRecoilState(postsAtom);
     const showToast = useShowToast();
     const { pid } = useParams();
@@ -44,6 +45,10 @@ const PostPage = () => {
                 setPosts([data]);
             } catch (error) {
                 showToast("Error", error.message, "error");
+                if (error.message === "Unauthorized") {
+                    localStorage.removeItem("user-threads");
+                    setUser(null);
+                }
             }
         };
 
@@ -79,6 +84,10 @@ const PostPage = () => {
             navigate(`/${user.username}`);
         } catch (error) {
             showToast("Error", error.message, "error");
+            if (error.message === "Unauthorized") {
+                localStorage.removeItem("user-threads");
+                setUser(null);
+            }
         } finally {
             setIsDeletePost(false);
         }

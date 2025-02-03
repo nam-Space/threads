@@ -11,7 +11,7 @@ import {
 import Message from "./Message";
 import MessageInput from "./MessageInput";
 import useShowToast from "../hooks/useShowToast";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
     conversationsAtom,
     selectedConversationAtom,
@@ -29,6 +29,7 @@ const MessageContainer = () => {
     const [loadingMessages, setLoadingMessages] = useState(true);
     const [messages, setMessages] = useState([]);
     const currentUser = useRecoilValue(userAtom);
+    const setUser = useSetRecoilState(userAtom);
     const { socket } = useSocket();
     const [conversations, setConversations] = useRecoilState(conversationsAtom);
     const messageEndRef = useRef(null);
@@ -160,6 +161,10 @@ const MessageContainer = () => {
                 setMessages(data);
             } catch (error) {
                 showToast("Error", error.message, "error");
+                if (error.message === "Unauthorized") {
+                    localStorage.removeItem("user-threads");
+                    setUser(null);
+                }
             } finally {
                 setLoadingMessages(false);
             }

@@ -12,6 +12,7 @@ import { useState } from "react";
 const Post = ({ post, postedBy }) => {
     const navigate = useNavigate();
     const showToast = useShowToast();
+    const setUser = useSetRecoilState(userAtom);
     const currentUser = useRecoilValue(userAtom);
     const setPosts = useSetRecoilState(postsAtom);
     const [isDeletePost, setIsDeletePost] = useState(false);
@@ -39,6 +40,10 @@ const Post = ({ post, postedBy }) => {
             setPosts((prev) => prev.filter((p) => p._id !== post._id));
         } catch (error) {
             showToast("Error", error.message, "error");
+            if (error.message === "Unauthorized") {
+                localStorage.removeItem("user-threads");
+                setUser(null);
+            }
         } finally {
             setIsDeletePost(false);
         }

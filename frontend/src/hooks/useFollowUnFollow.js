@@ -1,4 +1,4 @@
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import userAtom from "../atoms/userAtom";
 import { useState } from "react";
 import useShowToast from "./useShowToast";
@@ -6,6 +6,7 @@ import useShowToast from "./useShowToast";
 
 const useFollowUnFollow = (user) => {
     const currentUser = useRecoilValue(userAtom)
+    const setUser = useSetRecoilState(userAtom);
     const [following, setFollowing] = useState(user.followers.includes(currentUser?._id))
     const [updating, setUpdating] = useState(false)
     const showToast = useShowToast()
@@ -41,6 +42,10 @@ const useFollowUnFollow = (user) => {
             setFollowing(!following);
         } catch (error) {
             showToast("Error", error, "error");
+            if (error.message === "Unauthorized") {
+                localStorage.removeItem("user-threads");
+                setUser(null);
+            }
         } finally {
             setUpdating(false);
         }

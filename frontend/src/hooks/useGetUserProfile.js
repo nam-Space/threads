@@ -24,6 +24,10 @@ const useGetUserProfile = () => {
                 setUser(data)
             } catch (error) {
                 showToast("Error", error.message, "error");
+                if (error.message === "Unauthorized") {
+                    localStorage.removeItem("user-threads");
+                    setUser(null);
+                }
             } finally {
                 setLoading(false)
             }

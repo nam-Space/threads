@@ -1,10 +1,14 @@
 import { Button, Text } from "@chakra-ui/react";
 import useShowToast from "../hooks/useShowToast";
 import useLogout from "../hooks/useLogout";
+import { useSetRecoilState } from "recoil";
+import userAtom from "../atoms/userAtom";
 
 const SettingsPage = () => {
     const showToast = useShowToast();
     const logout = useLogout();
+    const setUser = useSetRecoilState(userAtom);
+
     const freezeAccount = async () => {
         if (!window.confirm("Are you sure you want to freeze your account?"))
             return;
@@ -24,6 +28,10 @@ const SettingsPage = () => {
             }
         } catch (error) {
             showToast("Error", error.message, "error");
+            if (error.message === "Unauthorized") {
+                localStorage.removeItem("user-threads");
+                setUser(null);
+            }
         }
     };
 

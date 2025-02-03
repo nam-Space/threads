@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 import useShowToast from "../hooks/useShowToast";
 import { Box, Flex, Spinner } from "@chakra-ui/react";
 import Post from "../components/Post";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import postsAtom from "../atoms/postsAtom";
 import SuggestedUsers from "../components/SuggestedUsers";
+import userAtom from "../atoms/userAtom";
 
 const HomePage = () => {
+    const setUser = useSetRecoilState(userAtom);
     const [posts, setPosts] = useRecoilState(postsAtom);
     const [loading, setLoading] = useState(true);
     const showToast = useShowToast();
@@ -24,6 +26,10 @@ const HomePage = () => {
                 setPosts(data);
             } catch (error) {
                 showToast("Error", error.message, "error");
+                if (error.message === "Unauthorized") {
+                    localStorage.removeItem("user-threads");
+                    setUser(null);
+                }
             } finally {
                 setLoading(false);
             }

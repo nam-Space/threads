@@ -17,6 +17,7 @@
     "backend": "file:..",
     "date-fns": "^3.6.0",
     "framer-motion": "^11.2.12",
+    "frontend": "file:",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-icons": "^5.2.1",

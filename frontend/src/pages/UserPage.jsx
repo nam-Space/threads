@@ -5,11 +5,13 @@ import useShowToast from "../hooks/useShowToast";
 import { Flex, Spinner } from "@chakra-ui/react";
 import Post from "../components/Post";
 import useGetUserProfile from "../hooks/useGetUserProfile";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import postsAtom from "../atoms/postsAtom";
+import userAtom from "../atoms/userAtom";
 
 const UserPage = () => {
     const { loading, user } = useGetUserProfile();
+    const setUser = useSetRecoilState(userAtom);
     const { username } = useParams();
     const showToast = useShowToast();
     const [fetchingPosts, setFetchingPosts] = useState(false);
@@ -26,6 +28,10 @@ const UserPage = () => {
                 setPosts(data);
             } catch (error) {
                 showToast("Error", error, "error");
+                if (error.message === "Unauthorized") {
+                    localStorage.removeItem("user-threads");
+                    setUser(null);
+                }
             } finally {
                 setFetchingPosts(false);
             }

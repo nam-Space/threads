@@ -54,6 +54,10 @@ const UpdateProfilePage = () => {
             localStorage.setItem("user-threads", JSON.stringify(data));
         } catch (error) {
             showToast("Error", error, "error");
+            if (error.message === "Unauthorized") {
+                localStorage.removeItem("user-threads");
+                setUser(null);
+            }
         } finally {
             setUpdating(false);
         }

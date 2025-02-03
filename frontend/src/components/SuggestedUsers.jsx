@@ -2,8 +2,11 @@ import { Box, Flex, Skeleton, SkeletonCircle, Text } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import SuggestedUser from "./SuggestedUser";
 import useShowToast from "../hooks/useShowToast";
+import { useSetRecoilState } from "recoil";
+import userAtom from "../atoms/userAtom";
 
 const SuggestedUsers = () => {
+    const setUser = useSetRecoilState(userAtom);
     const [loading, setLoading] = useState(true);
     const [suggestedUsers, setSuggestedUsers] = useState([]);
     const showToast = useShowToast();
@@ -21,6 +24,10 @@ const SuggestedUsers = () => {
                 setSuggestedUsers(data);
             } catch (error) {
                 showToast("Error", error.message, "error");
+                if (error.message === "Unauthorized") {
+                    localStorage.removeItem("user-threads");
+                    setUser(null);
+                }
             } finally {
                 setLoading(false);
             }

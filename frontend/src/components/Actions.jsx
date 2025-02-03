@@ -19,7 +19,7 @@ import {
     useDisclosure,
 } from "@chakra-ui/react";
 import { useRef, useState } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 import userAtom from "../atoms/userAtom";
 import useShowToast from "../hooks/useShowToast";
 import postsAtom from "../atoms/postsAtom";
@@ -29,7 +29,7 @@ import { BsFillImageFill } from "react-icons/bs";
 const Actions = ({ post }) => {
     if (!post) return null;
 
-    const user = useRecoilValue(userAtom);
+    const [user, setUser] = useRecoilState(userAtom);
     const [liked, setLiked] = useState(post.likes.includes(user?._id));
     const [posts, setPosts] = useRecoilState(postsAtom);
     const [isLiking, setIsLiking] = useState(false);
@@ -89,6 +89,10 @@ const Actions = ({ post }) => {
             setLiked(!liked);
         } catch (error) {
             showToast("Error", error.message, "error");
+            if (error.message === "Unauthorized") {
+                localStorage.removeItem("user-threads");
+                setUser(null);
+            }
         } finally {
             setIsLiking(false);
         }
@@ -131,6 +135,10 @@ const Actions = ({ post }) => {
             setImgUrl("");
         } catch (error) {
             showToast("Error", error.message, "error");
+            if (error.message === "Unauthorized") {
+                localStorage.removeItem("user-threads");
+                setUser(null);
+            }
         } finally {
             setIsReplying(false);
         }

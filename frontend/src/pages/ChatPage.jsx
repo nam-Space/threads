@@ -13,16 +13,18 @@ import Conversations from "../components/Conversations";
 import MessageContainer from "../components/MessageContainer";
 import useShowToast from "../hooks/useShowToast";
 import { useEffect, useState } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
     conversationsAtom,
     selectedConversationAtom,
 } from "../atoms/messagesAtom";
 import { useSocket } from "../context/SocketContext";
 import SelectAConversation from "../components/SelectAConversation";
+import userAtom from "../atoms/userAtom";
 
 const ChatPage = () => {
     const showToast = useShowToast();
+    const setUser = useSetRecoilState(userAtom);
     const [loadingConversations, setLoadingConversations] = useState(true);
     const [conversations, setConversations] = useRecoilState(conversationsAtom);
     const selectedConversation = useRecoilValue(selectedConversationAtom);
@@ -62,6 +64,10 @@ const ChatPage = () => {
                 setConversations(data);
             } catch (error) {
                 showToast("Error", error.message, "error");
+                if (error.message === "Unauthorized") {
+                    localStorage.removeItem("user-threads");
+                    setUser(null);
+                }
             } finally {
                 setLoadingConversations(false);
             }
@@ -120,6 +126,10 @@ const ChatPage = () => {
             setConversations(arrUsersFoundSort);
         } catch (error) {
             showToast("Error", error.message, "error");
+            if (error.message === "Unauthorized") {
+                localStorage.removeItem("user-threads");
+                setUser(null);
+            }
         } finally {
             setSearchingUser(false);
         }

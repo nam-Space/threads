@@ -23,8 +23,10 @@ import {
 } from "../atoms/messagesAtom";
 import { BsFillImageFill } from "react-icons/bs";
 import usePreviewImg from "../hooks/usePreviewImg";
+import userAtom from "../atoms/userAtom";
 
 const MessageInput = ({ setMessages }) => {
+    const setUser = useSetRecoilState(userAtom);
     const [messageText, setMessageText] = useState("");
     const showToast = useShowToast();
     const [selectedConversation, setSelectedConversation] = useRecoilState(
@@ -86,6 +88,10 @@ const MessageInput = ({ setMessages }) => {
             setImgUrl("");
         } catch (error) {
             showToast("Error", error.message, "error");
+            if (error.message === "Unauthorized") {
+                localStorage.removeItem("user-threads");
+                setUser(null);
+            }
         } finally {
             setIsSending(false);
         }
